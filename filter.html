@@ -1,0 +1,138 @@
+<head>
+    <title></title>
+</head>
+
+<body>
+    <canvas id="image"></canvas>
+
+    <script>
+        var canvas = document.getElementById("image"); 
+        cx = canvas.getContext('2d');
+        radius = 5;
+        
+        var img = new Image();
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            cx.drawImage(img, 0, 0);
+            //createBoxBlurKernel(radius);
+            //createSharpenKernel(radius);
+            createEdgeDetection(radius);
+            transformCanvas(canvas);
+        };
+        img.src = 'bunny.jpg';
+
+        function createBoxBlurKernel(radius) {
+            kernel = new Array();
+            for (var i = 0; i < radius; i++) {
+                kernel[i] = new Array();
+                for (var j = 0; j < radius; j++) {
+                    kernel[i][j] = 1/Math.pow(radius, 2);
+                }
+            }
+        }
+
+        function createSharpenKernel(radius) {
+            var centerX = Math.floor(radius/2);
+            var centerY = Math.floor(radius/2);
+            kernel = new Array();
+            for (var i = 0; i < radius; i++) {
+                kernel[i] = new Array();
+                for (var j = 0; j < radius; j++) {
+                    if (i == centerY || j == centerX) {
+                        kernel[i][j] = -1;
+                    } else {
+                        kernel[i][j] = 0;
+                    }
+                }
+            }
+            kernel[centerX][centerY] = radius*2-1;
+        }
+
+        function createEdgeDetection(radius) {
+            kernel = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]];
+        }
+
+        function getPixelColor(imageData, x, y) {
+            var width = imageData.width;
+            var base = 4 * (width * y + x);
+            var r = imageData.data[base];
+            var g = imageData.data[base+1];
+            var b = imageData.data[base+2];
+            var a = imageData.data[base+3];
+            return [r, g, b, a];
+        }
+
+        function setPixelColor(imageData, x, y, rgba) {
+            var width = imageData.width;
+            var base = 4 * (width * y + x);
+            imageData.data[base]   = rgba[0];
+            imageData.data[base+1] = rgba[1];
+            imageData.data[base+2] = rgba[2];
+            imageData.data[base+3] = rgba[3];
+        }
+
+        function randint(a, b) {
+            return Math.floor(a + Math.random() * (b - a));
+        }
+
+        function clamp(min, max, x) {
+            return Math.max(min, Math.min(max, x));
+        }
+
+        function transformCanvas(canvas) {
+            var cx = canvas.getContext('2d');
+            var imageData = cx.getImageData(0, 0, canvas.width, canvas.height);
+            var newImageData = cx.createImageData(imageData);
+            for (var x = 0; x < imageData.width; x++) {
+                for (var y = 0; y < imageData.height; y++) {
+                    setPixelColor(newImageData, x, y, transformPixel(imageData, x, y));
+                }
+            }
+            cx.putImageData(newImageData, 0, 0);
+        }
+        //createBoxBlurKernel(radius);
+        //createSharpenKernel(radius);
+
+        function transformPixel(imageData, x, y) {
+            //шум
+            /*var nx = clamp(0, imageData.width  - 1, randint(x - 10, x + 10));
+            var ny = clamp(0, imageData.height - 1, randint(y - 10, y + 10));
+            return getPixelColor(imageData, nx, ny);*/
+
+            //негатив
+            /*var rgba = getPixelColor(imageData, x, y);
+            rgba[0] = 255 - rgba[0];
+            rgba[1] = 255 - rgba[1];
+            rgba[2] = 255 - rgba[2];
+            return rgba;*/
+
+            //размытие и резкость
+            var r = 0;
+            var g = 0;
+            var b = 0;
+            var kernelSize = kernel.length;
+            var halfSize = (kernelSize - 1) / 2;
+
+            for (var row = 0; row < kernelSize; row++) {
+                for (var col = 0; col < kernelSize; col++) {
+                    var color = getPixelColor(
+                        imageData,
+                        clamp(0, imageData.width  - 1, x + col - halfSize),
+                        clamp(0, imageData.height - 1, y + row - halfSize)
+                    );
+                    r += kernel[row][col] * color[0];
+                    g += kernel[row][col] * color[1];
+                    b += kernel[row][col] * color[2];
+                }
+            }
+
+            return [Math.floor(r), Math.floor(g), Math.floor(b), 255];
+
+
+
+        }
+
+
+    </script>
+</body>

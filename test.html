@@ -1,0 +1,547 @@
+<head>
+    <title>
+        PSgram
+    </title>
+    <link rel="stylesheet" href="styles/bootstrap.css">
+    <link rel="stylesheet" href="styles/bootstrap-theme.css">
+    <link rel="stylesheet" href="styles/global.css">
+    <script src="scripts/jquery.js"></script>
+    <script src="scripts/bootstrap.js"></script>
+    <script src="scripts/global.js"></script>
+</head>
+
+<style>
+    body {
+        background: #eee;
+    }
+    .download_link {
+        display: none;
+        position: relative;
+        width: 200px;
+        margin: 0px 0px 10px 45px;
+    }
+    a.download {
+        width: 200px;
+    }
+    input.button {
+        width: 200px;
+        text-align: left;
+        outline: none;
+    }
+    canvas, .browse-image {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+    }
+    div.list-group {
+        width: 200px;
+        height: 100%;
+        overflow-y: auto;
+    }
+    div.canvas {
+        position: absolute;
+        left: 220px;
+        right: 0;
+        bottom: 0;
+        top: 20px;
+    }
+    div.panel-body, .panel {
+        padding: 0 20px 20px 20px; 
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+
+</style>
+
+<body>
+
+<header>
+        <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="index.html">
+                    <img alt="Сквозь призму" src="img/logo.png" height="30">
+                </a>
+            </div>
+
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="test.html">Обработать картиночку</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="http://afalina.ipq.co/tubogram">Тюбограм</a></li>
+            </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="support.html">Поддержка</a></li>
+                </ul>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <div><h4>Загрузите ваше изображение</h4>
+        <h5><input type="file" class="btn"></h5>
+    </div>
+<div class="panel panel-default">
+    <div class="panel-body">
+    <br>
+        <div class="list-group">
+            <input class="button list-group-item disabled" type="submit" disabled value="Черное и белое" onclick="run(sierraDither); setActiveColorFilter(0);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Оттенки серого" onclick="run(pixelFilter(greyscale)); setActiveColorFilter(1);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Негатив" onclick="run(pixelFilter(negative)); setActiveColorFilter(2);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Сепия" onclick="run(pixelFilter(sepia)); setActiveColorFilter(3);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Шум" onclick="run(noise(10)); setActiveColorFilter(4);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Размытие" onclick="run(gaussianBlur(15)); setActiveColorFilter(5);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Размытые края" onclick="run(vignette(gaussianBlur(30))); setActiveColorFilter(6);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Затемненные края" onclick="run(vignette(pixelFilter(constantColor(0, 10, 20)))); setActiveColorFilter(7);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Черно-белые края" onclick="run(vignette(pixelFilter(blackAndWhite))); setActiveColorFilter(8);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Края с шумом" onclick="run(vignette(noise(15))); setActiveColorFilter(9);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Сепия к краям" onclick="run(vignette(pixelFilter(sepia))); setActiveColorFilter(10);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Фантазия" onclick="run(vignette(pixelFilter(fantasy))); setActiveColorFilter(11);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Барельеф" onclick="run(kernelFilter2D(embossKernel(5))); setActiveColorFilter(12);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Резкость" onclick="run(kernelFilter2D(sharpenKernel(3))); setActiveColorFilter(13);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Гравюра" onclick="run(kernelFilter2D(edgeDetectionKernel(5))); setActiveColorFilter(14);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Ярче" onclick="run(pixelFilter(brightness)); setActiveColorFilter(15);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Контрастней" onclick="run(pixelFilter(contrast)); setActiveColorFilter(16);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Карандаш" onclick="run(pixelFilter(original)); runMergedFilter(kernelFilter2D(edgeDetectionKernel(5))); runMergedFilter(pixelFilter(negative)); runMergedFilter(pixelFilter(greyscale)); setActiveColorFilter(17);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Пластик" onclick="run(pixelFilter(plastic)); setActiveColorFilter(18);">
+            <input class="button list-group-item disabled" type="submit" disabled value="Вернуть как было" onclick="run(pixelFilter(original)); setActiveColorFilter(19);">
+
+        </div>
+        <div class="canvas">
+            <img class="browse-image" src="img/brouse_img.png">
+            <canvas width="1" height="1"></canvas>
+        </div>
+    <br>
+    </div>
+</div>
+        <div class="download_link">
+    <a class="download btn btn-primary" id="download" href="#" download="canvas.png">
+        <span class="glyphicon glyphicon-download-alt"></span>
+        Скачать
+    </a>
+</div>
+
+</div>
+
+
+<script>
+var input = document.querySelector('input');
+var canvas = document.querySelector('canvas');
+var link = document.getElementById('download');
+var cx = canvas.getContext('2d');
+var radius = 5;
+var img = new Image();
+
+input.addEventListener("change", function(event) {
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        img.onload = function() {
+            drawImageIntoCanvas(img, canvas);
+        }
+        img.src = event.target.result;
+    }
+    reader.readAsDataURL(event.target.files[0]);
+});
+
+function drawImageIntoCanvas(img, canvas) {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    document.getElementsByClassName("download_link")[0].style.display='block';
+    document.getElementsByClassName("browse-image")[0].style.display='none';
+    for (var i = 0; i < 20; i++) {
+        document.getElementsByClassName("button")[i].style.visibility='visible';
+        document.getElementsByClassName("button")[i].disabled=false;
+        document.getElementsByClassName("button")[i].className = "button list-group-item"
+
+    }
+    link.href = canvas.toDataURL();
+}
+
+function cloneImageData(imageData) {
+    var clone = new ImageData(imageData.width, imageData.height);
+    clone.data.set(imageData.data);
+    return clone;
+}
+
+function run(filter) {
+    drawImageIntoCanvas(img, canvas);
+    applyFilterToCanvas(canvas, filter);
+}
+
+function runMergedFilter(filter) {
+    applyFilterToCanvas(canvas, filter);
+}
+
+function applyFilterToCanvas(canvas, filter) {
+    var context = canvas.getContext('2d');
+    var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    filter(imageData);
+    context.putImageData(imageData, 0, 0);
+    link.href = canvas.toDataURL();
+}
+
+function clamp(low, high, x) {
+    return Math.max(low, Math.min(high, x));
+}
+
+function lerp(a, b, x) {
+    return a*(1 - x) + b*x;
+}
+
+function randint(a, b) {
+    return Math.floor(a + Math.random() * (b - a));
+}
+
+function luminosity(r, g, b) {
+    return 0.21 * r + 0.72 * g + 0.07 * b;
+}
+
+
+function setActiveColorFilter(index) {
+    for (var i = 0; i < 20; i++) {
+        document.getElementsByClassName("button")[i].className = "button list-group-item";
+    }
+    document.getElementsByClassName("button")[index].className += " active";
+}
+
+/**************************** PIXEL FILTERS **********************************/
+
+function pixelFilter(filter) {
+    return function(imageData) {
+        var data = imageData.data;
+        for (var i = 0; i < data.length; i += 4) {
+            filter(data, i);
+        }
+    };
+}
+
+function blackAndWhite(data, i) {
+    data[i + 1] = data[i];
+    data[i + 2] = data[i];
+}
+
+function greyscale(data, i) {
+    var newColor = data[i]*0.21 + data[i + 1]*0.72 + data[i + 2]*0.01;
+    data[i + 0] = newColor;
+    data[i + 1] = newColor;
+    data[i + 2] = newColor;
+}
+
+function constantColor(r, g, b) {
+    return function(data, i) {
+        data[i + 0] = r;
+        data[i + 1] = g;
+        data[i + 2] = b;
+    };
+}
+
+function negative(data, i) {
+    data[i + 0] = 255 - data[i + 0];
+    data[i + 1] = 255 - data[i + 1];
+    data[i + 2] = 255 - data[i + 2];
+}
+
+function sepia(data, i) {
+    var r = data[i], g = data[i + 1], b = data[i + 2];
+    data[i + 0] = 0.393 * r + 0.769 * g + 0.189 * b;
+    data[i + 1] = 0.349 * r + 0.686 * g + 0.168 * b;
+    data[i + 2] = 0.272 * r + 0.534 * g + 0.131 * b;
+}
+
+function fantasy(data, i) {
+    var r = data[i], g = data[i + 1], b = data[i + 2];
+    data[i + 0] = r;
+    data[i + 1] = b;
+    data[i + 2] = g;
+}
+
+function brightness(data, i) {
+    var brightness = 1.5;
+    data[i + 0] = data[i + 0] * brightness;
+    data[i + 1] = data[i + 1] * brightness;
+    data[i + 2] = data[i + 2] * brightness;
+}
+
+function contrast(data, i) {
+    var contrast = 100;
+    var factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+    var r = data[i], g = data[i + 1], b = data[i + 2];
+    data[i + 0] = factor * (r - 128) + 128;
+    data[i + 1] = factor * (g - 128) + 128;
+    data[i + 2] = factor * (b - 128) + 128;
+}
+
+function original(data, i) {
+    var r = data[i], g = data[i + 1], b = data[i + 2];
+    data[i + 0] = r;
+    data[i + 1] = g;
+    data[i + 2] = b;
+}
+
+function plastic(data, i) {
+    /*var c = data[i+2]+data[i+1], m = data[i]+data[i+2], y = data[i]+data[i+1];
+    data[i+0] = m;
+    data[i+1] = y;
+    data[i+2] = c;*/
+    var c = 0 * data[i] + 0.5*data[i+1] + 0.5*data[i+2];
+    var m = 1 * data[i] + 0 * data[i+1] + 0.5*data[i+2];
+    var y = 0.5*data[i] + 0.5*data[i+1] + 0 * data[i+2];
+    data[i+0] = m;
+    data[i+1] = y;
+    data[i+2] = c;
+}
+
+/********************************  BLUR **************************************/
+
+function gaussianBlur(radius) {
+    function gaussian(stdev, x) {
+        var a = 1 / (stdev * Math.sqrt(2*Math.PI));
+        var b = -1 / (2 * stdev * stdev);
+        return a * Math.exp(b*x*x);
+    }
+
+    var kernel = [];
+    for (var x = -radius; x <= radius; x++) {
+        kernel.push(gaussian(radius/3, x));
+    }
+
+    return kernelFilter1D.bind(null, kernel);
+}
+
+function kernelFilter1D(kernel, imageData) {
+    var width = imageData.width;
+    var height = imageData.height;
+    var input = imageData.data;
+    var output = new Uint8ClampedArray(input);
+    var totalPixels = width * height;
+    var kernelSize = kernel.length;
+    var radius = (kernelSize - 1) / 2;
+
+    for (var i = 0; i < totalPixels; i++) {
+        var x = i % width;
+        var y = (i / width) | 0;
+        var r = 0, g = 0, b = 0;
+        for (var ki = 0; ki < kernelSize; ki++) {
+            var inputX = clamp(0, width - 1, x + ki - radius);
+            var inputY = y;
+            var inputI = 4 * (width * inputY + inputX);
+            r += kernel[ki] * input[inputI + 0];
+            g += kernel[ki] * input[inputI + 1];
+            b += kernel[ki] * input[inputI + 2];
+        }
+        output[i*4 + 0] = r;
+        output[i*4 + 1] = g;
+        output[i*4 + 2] = b;
+        output[i*4 + 3] = 255;
+    }
+
+    var temp = input;
+    input = output;
+    output = temp;
+
+    for (var i = 0; i < totalPixels; i++) {
+        var x = i % width;
+        var y = (i / width) | 0;
+        var r = 0, g = 0, b = 0;
+        for (var ki = 0; ki < kernelSize; ki++) {
+            var inputX = x;
+            var inputY = clamp(0, height - 1, y + ki - radius);
+            var inputI = 4 * (width * inputY + inputX);
+            r += kernel[ki] * input[inputI + 0];
+            g += kernel[ki] * input[inputI + 1];
+            b += kernel[ki] * input[inputI + 2];
+        }
+        output[i*4 + 0] = r;
+        output[i*4 + 1] = g;
+        output[i*4 + 2] = b;
+        output[i*4 + 3] = 255;
+    }
+}
+
+function blurKernel(radius) {
+    kernel = new Array();
+    for (var i = 0; i < radius; i++) {
+        kernel[i] = new Array();
+        for (var j = 0; j < radius; j++) {
+            kernel[i][j] = 1/Math.pow(radius, 2);
+        }
+    }
+    return kernel;
+}
+
+function sharpenKernel(radius) {
+    var centerX = Math.floor(radius/2);
+    var centerY = Math.floor(radius/2);
+    kernel = new Array();
+    for (var i = 0; i < radius; i++) {
+        kernel[i] = new Array();
+        for (var j = 0; j < radius; j++) {
+            if (i == centerY || j == centerX) {
+                kernel[i][j] = -1;
+            } else {
+                kernel[i][j] = 0;
+            }
+        }
+    }
+    kernel[centerX][centerY] = radius*2-1;
+    return kernel;
+}
+
+function edgeDetectionKernel(radius) {
+    return [[-1, -1, -1],
+            [-1,  8, -1],
+            [-1, -1, -1]];
+}
+
+function embossKernel(radius) {
+     return [[1,   1,  1],
+             [1, 0.7, -1],
+             [-1, -1, -1]];
+    //return [[-1, -1, -1],[1, -0.7, 1],[1, 1, 1]];
+}
+
+function testKernel(radius){
+    return [1];
+}
+ 
+function kernelFilter2D(kernel) {
+    return function(imageData) {
+        var readingImageData = cloneImageData(imageData);
+        for (var x = 0; x < readingImageData.width; x++) {
+            for (var y = 0; y < readingImageData.height; y++) {
+                var r = 0, g = 0, b = 0;
+                var kernelSize = kernel.length;
+                var halfSize = (kernelSize - 1) / 2;
+                for (var row = 0; row < kernelSize; row++) {
+                    for (var col = 0; col < kernelSize; col++) {
+                        var color = getPixelColor(
+                            readingImageData,
+                            clamp(0, readingImageData.width  - 1, x + col - halfSize),
+                            clamp(0, readingImageData.height - 1, y + row - halfSize)
+                        );
+                        r += kernel[row][col] * color[0];
+                        g += kernel[row][col] * color[1];
+                        b += kernel[row][col] * color[2];
+                    }
+                }
+                setPixelColor(imageData, x, y, [r, g, b, 255]);
+            }
+        }
+    };
+}
+
+function getPixelColor(imageData, x, y) {
+    var width = imageData.width;
+    var base = 4 * (width * y + x);
+    var r = imageData.data[base];
+    var g = imageData.data[base + 1];
+    var b = imageData.data[base + 2];
+    var a = imageData.data[base + 3];
+    return [r, g, b, a];
+}
+
+function setPixelColor(imageData, x, y, rgba) {
+    var width = imageData.width;
+    var base = 4 * (width * y + x);
+    imageData.data[base]   = rgba[0];
+    imageData.data[base + 1] = rgba[1];
+    imageData.data[base + 2] = rgba[2];
+    imageData.data[base + 3] = rgba[3];
+}
+
+function sierraDither(imageData) {
+    var width = imageData.width;
+    var height = imageData.height;
+    var pixels = imageData.data;
+    var pixelIndex = function pixelIndex(x, y) {
+        return 4 * (y * width + x);
+    };
+
+    for (var i = 0; i < 4 * width * height; i += 4) {
+        pixels[i] = luminosity(pixels[i], pixels[i + 1], pixels[i + 2]);
+    }
+
+    for (var y = 0; y < height; y++) {
+        for (var x = 0; x < width; x++) {
+            var oldLuminosity = pixels[pixelIndex(x, y)];
+            var newLuminosity = oldLuminosity > 127 ? 255 : 0;
+            var error = oldLuminosity - newLuminosity;
+            pixels[pixelIndex(x + 0, y + 0)] = newLuminosity;
+            pixels[pixelIndex(x + 1, y + 0)] += error * 5 / 32;
+            pixels[pixelIndex(x + 2, y + 0)] += error * 3 / 32;
+            pixels[pixelIndex(x - 2, y + 1)] += error * 2 / 32;
+            pixels[pixelIndex(x - 1, y + 1)] += error * 4 / 32;
+            pixels[pixelIndex(x + 0, y + 1)] += error * 5 / 32;
+            pixels[pixelIndex(x + 1, y + 1)] += error * 4 / 32;
+            pixels[pixelIndex(x + 2, y + 1)] += error * 2 / 32;
+            pixels[pixelIndex(x - 1, y + 2)] += error * 2 / 32;
+            pixels[pixelIndex(x + 0, y + 2)] += error * 3 / 32;
+            pixels[pixelIndex(x + 1, y + 2)] += error * 2 / 32;
+        }
+    }
+
+    for (var _i = 0; _i < 4 * width * height; _i += 4) {
+        pixels[_i + 1] = pixels[_i];
+        pixels[_i + 2] = pixels[_i];
+    }
+}
+
+/******************************** VARIOUS ***********************************/
+
+
+function noise(radius) {
+    return function(imageData) {
+        var width = imageData.width;
+        var height = imageData.height;
+        var totalPixels = width * height;
+        var input  = new Uint8ClampedArray(imageData.data);
+        var output = imageData.data;
+        for (var i = 0; i < totalPixels; i++) {
+            var x = i % width;
+            var y = Math.floor(i / width);
+            var inputX = clamp(0, width - 1,  randint(x - radius, x + radius));
+            var inputY = clamp(0, height - 1, randint(y - radius, y + radius));
+            var inputI = width * inputY + inputX;
+            output[i*4 + 0] = input[inputI*4 + 0];
+            output[i*4 + 1] = input[inputI*4 + 1];
+            output[i*4 + 2] = input[inputI*4 + 2];
+        }
+    };
+}
+
+function vignette(filter) {
+    return function(imageData) {
+        var width = imageData.width;
+        var height = imageData.height;
+        var copy = cloneImageData(imageData);
+        filter(copy);
+        var src = copy.data;
+        var dst = imageData.data;
+        for (var x = 0; x < width; x++) {
+            for (var y = 0; y < height; y++) {
+                var i = 4 * (width * y + x);
+                var distance = Math.hypot(2*x/width  - 1, 2*y/height - 1);
+                var strength = clamp(0, 1, distance / Math.SQRT2);
+                dst[i + 0] = lerp(dst[i + 0], src[i + 0], strength);
+                dst[i + 1] = lerp(dst[i + 1], src[i + 1], strength);
+                dst[i + 2] = lerp(dst[i + 2], src[i + 2], strength);
+            }
+        }
+    }
+}
+
+</script>
+    <footer class="sticky-footer navbar-inverse">
+        <div class="container">
+            <div class="text-muted">&#x1F42C; 2016 <a href="https://vk.com/afalina21">Мария Бройде</a></div>
+        </div>
+    </footer>
+
+</body>

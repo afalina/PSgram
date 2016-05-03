@@ -1,0 +1,33 @@
+<style>
+    div {
+        position: absolute;
+        width: 800px;
+        height: 600px;
+        background: url(bunny.jpg);
+    }
+    canvas {
+        position: absolute;
+        width: 800px;
+        height: 600px;
+    }
+</style>
+
+<body>
+    <div></div>
+    <canvas></canvas>
+    
+
+    <script>
+    var canvas = document.querySelector("canvas");
+    cx = canvas.getContext('2d');
+    cx.fillStyle = "white";
+    for (var x = 0; x < canvas.width; x++) {
+        for (var y = 0; y < canvas.height; y++) {
+            if ((Math.random()*10)/3 <= 1)
+                cx.fillRect(x, y, 0.5, 0.5);
+        }
+    }
+
+
+    </script>
+</body>

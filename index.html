@@ -1,0 +1,289 @@
+<head>
+    <title>
+        PSgram
+    </title>
+    <link rel="stylesheet" href="styles/bootstrap.css">
+    <link rel="stylesheet" href="styles/bootstrap-theme.css">
+    <link rel="stylesheet" href="styles/global.css">
+    <script src="scripts/jquery.js"></script>
+    <script src="scripts/bootstrap.js"></script>
+    <script src="scripts/global.js"></script>
+</head>
+
+<style>
+    body {
+        background: #eee;
+    }
+    div.list-group {
+        display: inline-block;
+    }
+    div.images {
+        display: inline-block;
+        vertical-align: top;
+    }
+    input.button {
+        width: 200px;
+        text-align: left;
+        outline: none;
+    }
+    canvas, .bottom, .top {
+        max-width: 100%;
+        max-height: 100%;
+        display: block;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+    }
+    .bottom, .top {
+        display: none;
+    }
+    div.list-group {
+        width: 200px;
+        height: 100%;
+        overflow-y: auto;
+    }
+    div.canvas {
+        position: absolute;
+        left: 220px;
+        right: 0;
+        bottom: 0;
+        top: 20px;
+    }
+    div.panel-body, .panel {
+        padding: 0 20px 20px 20px; 
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    #img_container img {
+      -webkit-transition: opacity 1s ease-in-out;
+      -moz-transition: opacity 1s ease-in-out;
+      -o-transition: opacity 1s ease-in-out;
+      transition: opacity 2s ease-in-out;
+    }
+
+
+    @-webkit-keyframes cf3FadeInOut {
+        0% {opacity:1;}
+        45% {opacity:1;}
+        55% {opacity:0;}
+        100% {opacity:0;}
+    }
+
+    @-moz-keyframes cf3FadeInOut {
+        0% {opacity:1;}
+        45% {opacity:1;}
+        55% {opacity:0;}
+        100% {opacity:0;}
+    }
+
+    @-o-keyframes cf3FadeInOut {
+        0% {opacity:1;}
+        45% {opacity:1;}
+        55% {opacity:0;}
+        100% {opacity:0;}
+    }
+
+    @keyframes cf3FadeInOut {
+        0% {opacity:1;}
+        45% {opacity:1;}
+        55% {opacity:0;}
+        100% {opacity:0;}
+    }
+
+    #img_container img.top {
+     -webkit-animation-name: cf3FadeInOut;
+      -webkit-animation-timing-function: ease-in-out;
+      -webkit-animation-iteration-count: infinite;
+      -webkit-animation-duration: 5s;
+      -webkit-animation-direction: alternate;
+
+      -moz-animation-name: cf3FadeInOut;
+      -moz-animation-timing-function: ease-in-out;
+      -moz-animation-iteration-count: infinite;
+      -moz-animation-duration: 5s;
+      -moz-animation-direction: alternate;
+
+      -o-animation-name: cf3FadeInOut;
+      -o-animation-timing-function: ease-in-out;
+      -o-animation-iteration-count: infinite;
+      -o-animation-duration: 5s;
+      -o-animation-direction: alternate;
+
+      animation-name: cf3FadeInOut;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-duration: 5s;
+      animation-direction: alternate;
+    }
+
+</style>
+
+<body>
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="index.html">
+                        <img alt="PSgram" src="img/logo.png" height="30">
+                    </a>
+                </div>
+
+                <ul class="nav navbar-nav">
+                    <li><a href="test.html">Обработать картиночку</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="http://afalina.ipq.co/tubogram">Тюбограм</a></li>
+                </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="support.html">Поддержка</a></li>
+                    </ul>
+            </div>
+        </nav>
+
+    <div class="container">
+        <div class="jumbotron welcome">
+            <h1>PSgram</h1>
+            <p>
+                Нету Instagram, потому что он для мейнстримеров?<br>
+                Лень ставить Photoshop только ради того, чтоб поменять фон у фоточки?<br>
+                Не беда! Фильтры PSgram сделают лучше любую картинку.
+            </p>
+            <p>
+                <a href="test.html" class="btn btn-default btn-lg">
+                    <span class="glyphicon glyphicon-camera"></span>
+                    Сделать красиво!
+                </a>
+            </p>
+        </div>
+
+    <div class="panel panel-default">
+    <div class="panel-body">
+    <br>
+        <div class="list-group">
+            <input class="button list-group-item active" type="submit" value="Черное и белое" onclick="setActiveColorFilter(0);">
+            <input class="button list-group-item" type="submit" value="Оттенки серого" onclick="setActiveColorFilter(1);">
+            <input class="button list-group-item" type="submit" value="Негатив" onclick="setActiveColorFilter(2);">
+            <input class="button list-group-item" type="submit" value="Сепия" onclick="setActiveColorFilter(3);">
+            <input class="button list-group-item" type="submit" value="Шум" onclick="setActiveColorFilter(4);">
+            <input class="button list-group-item" type="submit" value="Размытие" onclick="setActiveColorFilter(5);">
+            <input class="button list-group-item" type="submit" value="Размытые края" onclick="setActiveColorFilter(6);">
+            <input class="button list-group-item" type="submit" value="Затемненные края" onclick="setActiveColorFilter(7);">
+            <input class="button list-group-item" type="submit" value="Черно-белые края" onclick="setActiveColorFilter(8);">
+            <input class="button list-group-item" type="submit" value="Края с шумом" onclick="setActiveColorFilter(9);">
+            <input class="button list-group-item" type="submit" value="Сепия к краям" onclick="setActiveColorFilter(10);">
+            <input class="button list-group-item" type="submit" value="Фантазия" onclick="setActiveColorFilter(11);">
+            <input class="button list-group-item" type="submit" value="Барельеф" onclick="setActiveColorFilter(12);">
+            <input class="button list-group-item" type="submit" value="Резкость" onclick="setActiveColorFilter(13);">
+            <input class="button list-group-item" type="submit" value="Гравюра" onclick="setActiveColorFilter(14);">
+            <input class="button list-group-item" type="submit" value="Ярче" onclick="setActiveColorFilter(15);">
+            <input class="button list-group-item" type="submit" value="Контрастней" onclick="setActiveColorFilter(16);">
+            <input class="button list-group-item" type="submit" value="Карандаш" onclick="setActiveColorFilter(17);">
+            <input class="button list-group-item" type="submit" value="Пластик" onclick="setActiveColorFilter(18);">
+            
+
+        </div>
+        <div class="canvas" id="img_container">
+            <!--0 Black&White-->
+            <img class="bottom" style="display: block;" src="img/black_and_white.png">
+            <img class="top" style="display: block;" src="img/test34.jpg">
+            
+            <!--1 GrayScale-->
+            <img class="bottom" src="img/grayscale.png">
+            <img class="top" src="img/test62.jpg">
+            
+            <!--2 Negative-->
+            <img class="bottom" src="img/negative.png">
+            <img class="top" src="img/test9.jpg">
+
+            <!--3 Sepia-->
+            <img class="bottom" src="img/sepia.png">
+            <img class="top" src="img/test70.jpg">
+            
+            <!--4 Noise-->
+            <img class="bottom" src="img/noise.png">
+            <img class="top" src="img/test1.jpg">
+            
+            <!--5 Blur-->
+            <img class="bottom" src="img/blur.png">
+            <img class="top" src="img/test36.jpg">
+
+            <!--6 Vignette Blur-->
+            <img class="bottom" src="img/vignette_blur.png">
+            <img class="top" src="img/test11.jpg">
+
+            <!--7 Vignette Dark-->
+            <img class="bottom" src="img/vignette_dark.png">
+            <img class="top" src="img/test24.jpg">
+
+            <!--8 Vignette Black&White-->
+            <img class="bottom" src="img/vignette_black_and_white.png">
+            <img class="top" src="img/test69.jpg">
+
+            <!--9 Vignette Noise-->
+            <img class="bottom" src="img/vignette_noise.png">
+            <img class="top" src="img/test58.jpg">
+
+            <!--10 Vignette Sepia-->
+            <img class="bottom" src="img/vignette_sepia.png">
+            <img class="top" src="img/test67.jpg">
+
+            <!--11 Fantasy-->
+            <img class="bottom" src="img/fantasy_filter.png">
+            <img class="top" src="img/test4.jpg">
+
+            <!--12 Emboss-->
+            <img class="bottom" src="img/emboss.png">
+            <img class="top" src="img/test25.jpg">
+            
+            <!--13 Sharpen-->
+            <img class="bottom" src="img/sharpen.png">
+            <img class="top" src="img/test27.jpg">
+            
+            <!--14 Edge Detection-->
+            <img class="bottom" src="img/edge_detection.png">
+            <img class="top" src="img/test37.jpg">
+            
+            <!--15 Brightness-->
+            <img class="bottom" src="img/brightness.png">
+            <img class="top" src="img/test45.jpg">
+            
+            <!--16 Contrast-->
+            <img class="bottom" src="img/contrast.png">
+            <img class="top" src="img/test57.jpg">
+            
+            <!--17 Pencil-->
+            <img class="bottom" src="img/pencil.png">
+            <img class="top" src="img/test41.jpg">
+            
+            <!--18 Plastic-->
+            <img class="bottom" src="img/plastic.png">
+            <img class="top" src="img/test5.jpg">
+            
+        </div>
+        </div>
+        </div>
+
+    </div>
+
+    <script>
+        function setActiveColorFilter(index) {
+            for (var i = 0; i < 19; i++) {
+                document.getElementsByClassName("button")[i].className = "button list-group-item";
+                document.getElementsByClassName("bottom")[i].style.display = "none";
+                document.getElementsByClassName("top")[i].style.display = "none";
+            }
+            document.getElementsByClassName("bottom")[index].style.display = "block";
+            document.getElementsByClassName("top")[index].style.display = "block";
+            document.getElementsByClassName("button")[index].className += " active";
+
+        }
+    </script>
+    <footer class="sticky-footer navbar-inverse">
+        <div class="container">
+            <div class="text-muted">&#x1F42C; 2016 <a href="https://vk.com/afalina21">Мария Бройде</a></div>
+        </div>
+    </footer>
+</body>
